@@ -51,7 +51,7 @@ app.use("/api", limiter);
 app.use("/Uploads", express.static("./Uploads"));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send(`Boiler Plate is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
+  res.send(`Pak ovo is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
 });
 
 // routes register
@@ -68,5 +68,5 @@ app.all("*", (req: Request, res: Response) => {
 app.use(errorHandler);
 
 httpsServer.listen(PORT, () => {
-  console.log(`Server is running on Port: ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
+  console.log(`Pak ovo is running on Port: ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
 });

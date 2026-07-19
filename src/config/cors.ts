@@ -1,6 +1,7 @@
 const allowedOrigins = new Set([
   "customdev.solutions",
   "code-verse-dev.github.io",
+  "pakovo",
   "localhost",
 ]);
 
