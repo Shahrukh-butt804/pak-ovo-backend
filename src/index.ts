@@ -48,7 +48,15 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 //static routes
-app.use("/Uploads", express.static("./Uploads"));
+// app.use("/Uploads", express.static("./Uploads"));
+app.use(
+  "/Uploads",
+  (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static("./Uploads")
+);
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Pak ovo is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
