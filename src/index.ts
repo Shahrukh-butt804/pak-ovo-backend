@@ -36,7 +36,16 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
-const lastDeployTime = new Date().toLocaleString()
+const lastDeployTime = new Date().toLocaleString("en-US", {
+  timeZone: "Asia/Karachi",
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true,
+});
 
 //limiting the api calls
 const limiter = rateLimit({
