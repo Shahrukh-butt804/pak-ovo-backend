@@ -10,7 +10,7 @@ const getAllUsers = tryCatch(async (req: any, res: Response): Promise<any> => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const keyword = req.query.keyword || "";
-  const role = req.query.role || "user";
+  const role = req.query.role;
 
 
   const aggregate = User.aggregate([
