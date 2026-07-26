@@ -35,7 +35,23 @@ const login = tryCatch(async (req: Request, res: Response): Promise<any> => {
   if (!email || !password) {
     throw new ApiError(400, "Please provide email and password");
   }
-  const user: any = await User.findOne({ email, role });
+
+  const roleMap: Record<string, string[]> = {
+    user: ["user"],
+    admin: ["admin", "manager"],
+  };
+
+  const rolesToFind = roleMap[role];
+
+  if (!rolesToFind) {
+    throw new ApiError(400, "Invalid role");
+  }
+
+  const user = await User.findOne({
+    email,
+    role: { $in: rolesToFind },
+  });
+
   if (!user) {
     throw new ApiError(401, "user not found");
   }
