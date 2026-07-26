@@ -8,9 +8,9 @@ const subCategoryRouter = Router();
 subCategoryRouter.route("/").get(verifyJWT, getAllSubCategories);
 subCategoryRouter.route("/:id").get(verifyJWT, getSubCategoryById);
 
-subCategoryRouter.route("/add").post(AllowOnly("admin"), addSubCategory);
-subCategoryRouter.route("/:id").put(AllowOnly("admin"), updateSubCategories);
-subCategoryRouter.route("/:id").delete(AllowOnly("admin"), deleteSubCategories);
+subCategoryRouter.route("/add").post(AllowOnly(["admin", "manager"]), addSubCategory);
+subCategoryRouter.route("/:id").put(AllowOnly(["admin", "manager"]), updateSubCategories);
+subCategoryRouter.route("/:id").delete(AllowOnly(["admin", "manager"]), deleteSubCategories);
 
 
 export { subCategoryRouter };

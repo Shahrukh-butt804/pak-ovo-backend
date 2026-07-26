@@ -11,9 +11,9 @@ orderRouter.route("/get-stripe-keys").get(getStripeKeys);
 orderRouter.route("/create-order").post(
   // validateOrder, handleValidationErrors,
   verifyJWT, createOrder);
-orderRouter.route("/").get(AllowOnly("admin"), getAllOrder);
+orderRouter.route("/").get(AllowOnly(["admin", "manager"]), getAllOrder);
 orderRouter.route("/by-id/:id").get(getOrderById);
 orderRouter.route("/my-orders").get(verifyJWT, getMyOrders);
-orderRouter.route("/:id").put(AllowOnly("admin"), updateOrderStatus);
+orderRouter.route("/:id").put(AllowOnly(["admin", "manager"]), updateOrderStatus);
 
 export { orderRouter };

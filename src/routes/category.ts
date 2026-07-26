@@ -19,9 +19,9 @@ categoryRouter.route("/with-subcategories").get(verifyJWT, categoriesWithSubCate
 categoryRouter.route("/:id").get(verifyJWT, getCategoryById);
 categoryRouter.route("/slug/:slug").get(verifyJWT, getCategoryBySlug);
 
-categoryRouter.route("/add").post(AllowOnly("admin"), uploads.categoryUpload, addCategory);
-categoryRouter.route("/:id").put(AllowOnly("admin"), uploads.categoryUpload, updateCategory);
-categoryRouter.route("/:id").delete(AllowOnly("admin"), deleteCategory);
+categoryRouter.route("/add").post(AllowOnly(["admin", "manager"]), uploads.categoryUpload, addCategory);
+categoryRouter.route("/:id").put(AllowOnly(["admin", "manager"]), uploads.categoryUpload, updateCategory);
+categoryRouter.route("/:id").delete(AllowOnly(["admin", "manager"]), deleteCategory);
 
 
 export { categoryRouter };

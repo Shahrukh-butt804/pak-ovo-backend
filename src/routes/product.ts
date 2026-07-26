@@ -12,9 +12,9 @@ const productRouter = Router();
 productRouter.route("/").get(verifyJWT, getAllProducts);
 productRouter.route("/:id").get(verifyJWT, getProductById);
 productRouter.route("/slug/:slug").get(verifyJWT, getProductBySlug);
-productRouter.route("/add").post(AllowOnly("admin"), uploads.productUpload, addProductValidation, handleValidationErrors, addProduct);
-productRouter.route("/:id").put(AllowOnly("admin"), uploads.productUpload, updateProductValidation, handleValidationErrors, updateProduct);
-productRouter.route("/:id").delete(AllowOnly("admin"), deleteProduct);
+productRouter.route("/add").post(AllowOnly(["admin", "manager"]), uploads.productUpload, addProductValidation, handleValidationErrors, addProduct);
+productRouter.route("/:id").put(AllowOnly(["admin", "manager"]), uploads.productUpload, updateProductValidation, handleValidationErrors, updateProduct);
+productRouter.route("/:id").delete(AllowOnly(["admin", "manager"]), deleteProduct);
 
 
 
