@@ -73,14 +73,7 @@ const productSchema = new mongoose.Schema({
     type: String,
   },
   faqs: {
-    type: [
-      {
-        question: { type: String, required: true, trim: true },
-        answer: { type: String, required: true, trim: true },
-        _id: false,
-      },
-    ],
-    default: [],
+    type: String
   }
 
 }, { timestamps: true });

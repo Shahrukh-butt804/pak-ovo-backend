@@ -181,9 +181,6 @@ const addProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
     throw new ApiError(400, "Product image is required");
   }
 
-  const parsedFaqs = faqs ? JSON.parse(faqs) : [];
-
-
   const product = await Product.create({
     category,
     subCategory,
@@ -202,7 +199,7 @@ const addProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
     howToUse,
     ingredients,
     additionalInformation,
-    faqs: parsedFaqs
+    faqs
   });
 
   return ApiResponse(res, "Product added successfully", product);
@@ -259,9 +256,8 @@ const updateProduct = tryCatch(async (req: any, res: Response): Promise<any> => 
   if (howToUse) product.howToUse = howToUse;
   if (ingredients) product.ingredients = ingredients;
   if (additionalInformation) product.additionalInformation = additionalInformation;
-  const parsedFaqs = faqs ? JSON.parse(faqs) : [];
-  if (parsedFaqs) {
-    product.faqs = parsedFaqs;
+  if (faqs) {
+    product.faqs = faqs;
   }
 
 
