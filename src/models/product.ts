@@ -49,6 +49,39 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  metaTitle: {
+    type: String,
+    required: true,
+  },
+  metaDescription: {
+    type: String,
+    required: true,
+  },
+  productOverview: {
+    type: String,
+  },
+  benefits: {
+    type: String,
+  },
+  howToUse: {
+    type: String,
+  },
+  ingredients: {
+    type: String,
+  },
+  additionalInformation: {
+    type: String,
+  },
+  faqs: {
+    type: [
+      {
+        question: { type: String, required: true, trim: true },
+        answer: { type: String, required: true, trim: true },
+        _id: false,
+      },
+    ],
+    default: [],
+  }
 
 }, { timestamps: true });
 

@@ -174,12 +174,14 @@ const getProductBySlug = tryCatch(async (req: any, res: Response): Promise<any> 
 
 const addProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
 
-  const { category, subCategory, title, description, price, discountedPrice, rating, reviews } = req.body;
+  const { category, subCategory, title, description, price, discountedPrice, rating, reviews, metaTitle, metaDescription, productOverview, benefits, howToUse, ingredients, additionalInformation, faqs } = req.body;
   const image = req?.files && req?.files?.image ? req?.files?.image[0]?.path : null;
 
   if (!image) {
     throw new ApiError(400, "Product image is required");
   }
+
+  const parsedFaqs = faqs ? JSON.parse(faqs) : [];
 
 
   const product = await Product.create({
@@ -192,7 +194,15 @@ const addProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
     discountedPrice: Number(discountedPrice) === 0 ? null : discountedPrice,
     rating,
     reviews,
-    image
+    image,
+    metaTitle,
+    metaDescription,
+    productOverview,
+    benefits,
+    howToUse,
+    ingredients,
+    additionalInformation,
+    faqs: parsedFaqs
   });
 
   return ApiResponse(res, "Product added successfully", product);
@@ -202,12 +212,13 @@ const addProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
 const updateProduct = tryCatch(async (req: any, res: Response): Promise<any> => {
   const { id } = req.params;
 
-  const { category, subCategory, title, description, price, discountedPrice, rating, reviews, inStock } = req.body;
+  const { category, subCategory, title, description, price, discountedPrice, rating, reviews, inStock, metaTitle, metaDescription, productOverview, benefits, howToUse, ingredients, additionalInformation, faqs } = req.body;
   const image = req?.files && req?.files?.image ? req?.files?.image[0]?.path : null;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Product id is required");
   }
+
 
   const product = await Product.findById(id);
 
@@ -241,6 +252,18 @@ const updateProduct = tryCatch(async (req: any, res: Response): Promise<any> => 
   if (rating) product.rating = rating;
   if (reviews) product.reviews = reviews;
   if (image) product.image = image;
+  if (metaTitle) product.metaTitle = metaTitle;
+  if (metaDescription) product.metaDescription = metaDescription;
+  if (productOverview) product.productOverview = productOverview;
+  if (benefits) product.benefits = benefits;
+  if (howToUse) product.howToUse = howToUse;
+  if (ingredients) product.ingredients = ingredients;
+  if (additionalInformation) product.additionalInformation = additionalInformation;
+  const parsedFaqs = faqs ? JSON.parse(faqs) : [];
+  if (parsedFaqs) {
+    product.faqs = parsedFaqs;
+  }
+
 
   await product.save();
 

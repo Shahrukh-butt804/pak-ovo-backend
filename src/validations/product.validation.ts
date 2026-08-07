@@ -34,12 +34,12 @@ export const addProductValidation: ValidationChain[] = [
   body("title")
     .trim()
     .notEmpty().withMessage("Title is required")
-    .isLength({ min: 2, max: 150 }).withMessage("Title must be between 2 and 150 characters"),
+    .isLength({ min: 2, max: 300 }).withMessage("Title must be between 2 and 300 characters"),
 
   body("description")
     .trim()
     .notEmpty().withMessage("Description is required")
-    .isLength({ max: 2000 }).withMessage("Description must be under 2000 characters"),
+    .isLength({ max: 3000 }).withMessage("Description must be under 3000 characters"),
 
   body("price")
     .notEmpty().withMessage("Price is required")
@@ -64,4 +64,16 @@ export const addProductValidation: ValidationChain[] = [
     .trim()
     .notEmpty().withMessage("Reviews is required")
     .isInt({ min: 0 }).withMessage("Reviews must be a non-negative integer"),
+
+  body("metaTitle")
+    .trim()
+    .notEmpty().withMessage("Meta title is required")
+    .isLength({ max: 300 }).withMessage("Meta title must be under 300 characters"),
+
+  body("metaDescription")
+    .trim()
+    .notEmpty().withMessage("Meta description is required")
+    .isLength({ max: 3000 }).withMessage("Meta description must be under 3000 characters"),
+
+
 ];
