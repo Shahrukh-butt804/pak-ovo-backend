@@ -1,10 +1,60 @@
 import { Response } from "express";
-import { User } from "../models/user";
-import { tryCatch } from "../utils/tryCatch";
-import { ApiResponse } from "../utils/apiResponse";
-import { ApiError } from "../utils/apiError";
 import mongoose from "mongoose";
+import { Order } from "../models/order";
+import { Product } from "../models/product";
 import { Route } from "../models/routes";
+import { User } from "../models/user";
+import { ApiError } from "../utils/apiError";
+import { ApiResponse } from "../utils/apiResponse";
+import { tryCatch } from "../utils/tryCatch";
+
+const getDashboardReport = tryCatch(async (req: any, res: Response): Promise<any> => {
+  const [summary] = await Order.aggregate([
+    {
+      $group: {
+        _id: null,
+        revenue: { $sum: "$totalAmount" },
+        totalOrders: { $sum: 1 },
+        customers: { $addToSet: "$user" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        revenue: 1,
+        totalOrders: 1,
+        customers: { $size: "$customers" },
+      },
+    },
+  ]);
+
+  const totalProducts = await Product.countDocuments();
+  const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+
+  const recentOrders = await Order.find({})
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select("shippingAddress totalAmount status createdAt")
+    .lean();
+
+  const formattedRecentOrders = recentOrders.map((order: any) => ({
+    orderId: `PKO-${order._id.toString().slice(-4).toUpperCase()}`,
+    customer: `${order.shippingAddress?.firstName || ""} ${order.shippingAddress?.lastName || ""}`.trim(),
+    total: order.totalAmount,
+    status: order.status,
+  }));
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      revenue: summary?.revenue || 0,
+      totalOrders: summary?.totalOrders || 0,
+      customers: totalUsers || 0,
+      totalProducts,
+      recentOrders: formattedRecentOrders,
+    },
+  });
+});
 
 const getAllUsers = tryCatch(async (req: any, res: Response): Promise<any> => {
 
@@ -135,4 +185,5 @@ const assignManagerRoutes = tryCatch(async (req: any, res: Response): Promise<an
 });
 
 
-export { getAllUsers, getUserById, toggleUserStatus, assignManagerRoutes, changeUserRole };
+export { getDashboardReport, assignManagerRoutes, changeUserRole, getAllUsers, getUserById, toggleUserStatus };
+
