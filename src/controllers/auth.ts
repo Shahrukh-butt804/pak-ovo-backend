@@ -50,7 +50,7 @@ const login = tryCatch(async (req: Request, res: Response): Promise<any> => {
   const user = await User.findOne({
     email,
     role: { $in: rolesToFind },
-  });
+  }).populate("assignedRoutes", "name");
 
   if (!user) {
     throw new ApiError(401, "user not found");

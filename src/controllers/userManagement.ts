@@ -4,6 +4,7 @@ import { tryCatch } from "../utils/tryCatch";
 import { ApiResponse } from "../utils/apiResponse";
 import { ApiError } from "../utils/apiError";
 import mongoose from "mongoose";
+import { Route } from "../models/routes";
 
 const getAllUsers = tryCatch(async (req: any, res: Response): Promise<any> => {
 
@@ -70,4 +71,68 @@ const toggleUserStatus = tryCatch(async (req: any, res: Response): Promise<any> 
 
 })
 
-export { getAllUsers, getUserById, toggleUserStatus };
+const changeUserRole = tryCatch(async (req: any, res: Response): Promise<any> => {
+
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error("User id is required");
+  }
+
+  if (!role || !["user", "manager"].includes(role)) {
+    throw new ApiError(400, "Invalid role provided");
+  }
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (user.role === "admin") {
+    throw new ApiError(400, "Admin users cannot have their role changed");
+  }
+
+  user.role = role;
+  await user.save();
+
+  return ApiResponse(res, "User role updated successfully", user, 200);
+})
+
+const assignManagerRoutes = tryCatch(async (req: any, res: Response): Promise<any> => {
+  const { id } = req.params;
+  const { routes } = req.body;
+
+  if (!Array.isArray(routes)) {
+    throw new ApiError(400, "Routes must be an array of route IDs");
+  }
+
+  const manager = await User.findById(id);
+  if (!manager) {
+    throw new ApiError(404, "Manager not found");
+  }
+
+  if (manager.role !== "manager") {
+    throw new ApiError(400, "Routes can only be assigned to managers");
+  }
+
+  if (routes.length > 0) {
+    const validRoutes = await Route.find({ _id: { $in: routes } });
+    if (validRoutes.length !== routes.length) {
+      throw new ApiError(400, "One or more route IDs are invalid");
+    }
+  }
+
+  manager.assignedRoutes = routes;
+  await manager.save();
+
+  const populatedManager = await User.findById(id)
+    .select("-password -refreshToken -otp")
+    .populate("assignedRoutes", "name");
+
+  return ApiResponse(res, "Manager routes updated successfully", populatedManager);
+});
+
+
+export { getAllUsers, getUserById, toggleUserStatus, assignManagerRoutes, changeUserRole };

@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const userSchema = new mongoose.Schema(
@@ -43,6 +43,13 @@ const userSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    assignedRoutes: {
+      type: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Route"
+      }],
+      default: [],
     },
   },
   { timestamps: true },
