@@ -285,4 +285,3 @@ const deleteProduct = tryCatch(async (req: any, res: Response): Promise<any> => 
 });
 
 export { addProduct, deleteProduct, getAllProducts, getProductById, getProductBySlug, updateProduct };
-
