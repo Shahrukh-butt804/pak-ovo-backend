@@ -13,6 +13,11 @@ export const PERSISTENT_UPLOADS_ROOT = process.env.NODE_ENV === 'production'
   ? '/home/u349337732/domains/api.pakovo.com/persistent-uploads'
   : path.join(process.cwd(), 'Uploads');
 
+// Converts an absolute upload path back into a relative one safe to store in the DB
+const toRelativeUploadPath = (absolutePath: string): string => {
+  return path.relative(PERSISTENT_UPLOADS_ROOT, absolutePath).split(path.sep).join('/');
+};
+
 // General function to create multer storage
 const createStorage = (uploadPath: string): StorageEngine => {
   return multer.diskStorage({
@@ -50,6 +55,27 @@ const createLimits = (maxSize: number) => {
   };
 };
 
+// Rewrites req.file / req.files[...].path from absolute → relative after multer finishes writing
+const relativizeFilePaths = (req: any): void => {
+  if (req.file) {
+    req.file.path = toRelativeUploadPath(req.file.path);
+  }
+  if (req.files) {
+    if (Array.isArray(req.files)) {
+      req.files.forEach((f: any) => {
+        f.path = toRelativeUploadPath(f.path);
+      });
+    } else {
+      // req.files is an object keyed by field name (e.g. { image: [...] })
+      Object.values(req.files).forEach((fileArray: any) => {
+        fileArray.forEach((f: any) => {
+          f.path = toRelativeUploadPath(f.path);
+        });
+      });
+    }
+  }
+};
+
 // Error handler for multer
 const errorHandler = (multerMiddleware: any) => {
   return (req: any, res: any, next: any) => {
@@ -61,6 +87,7 @@ const errorHandler = (multerMiddleware: any) => {
           message: err.message,
         });
       }
+      relativizeFilePaths(req); // Convert absolute paths to relative before controllers read them
       next(); // Continue to the next middleware
     });
   };
