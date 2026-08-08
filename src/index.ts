@@ -13,6 +13,7 @@ import { router } from "./routes";
 import { errorHandler } from "./utils/middlewares/error";
 import { AppError } from "./utils/appError";
 import corsOptions from "./config/cors";
+import { PERSISTENT_UPLOADS_ROOT } from "./utils/multer";
 
 const app = express();
 
@@ -57,7 +58,8 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 //static routes
-app.use("/Uploads", express.static("./Uploads"));
+// app.use("/Uploads", express.static("./Uploads"));
+app.use('/Uploads', express.static(PERSISTENT_UPLOADS_ROOT));
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Pak ovo is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);

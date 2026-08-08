@@ -9,11 +9,15 @@ const createFolderIfNotExists = (folderPath: string): void => {
   }
 };
 
+export const PERSISTENT_UPLOADS_ROOT = process.env.NODE_ENV === 'production'
+  ? '/home/u349337732/domains/api.pakovo.com/persistent-uploads'
+  : path.join(process.cwd(), 'Uploads');
+
 // General function to create multer storage
 const createStorage = (uploadPath: string): StorageEngine => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
-      const uploadFolderPath = path.join('Uploads', uploadPath);
+      const uploadFolderPath = path.join(PERSISTENT_UPLOADS_ROOT, uploadPath);
       createFolderIfNotExists(uploadFolderPath); // Ensure the folder exists
       cb(null, uploadFolderPath); // Set the upload path
     },
