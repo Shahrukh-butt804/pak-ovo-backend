@@ -14,7 +14,7 @@ import { uploads } from "../utils/multer";
 
 const categoryRouter = Router();
 
-categoryRouter.route("/").get(verifyJWT, getAllCategories);
+categoryRouter.route("/").get(getAllCategories);
 categoryRouter.route("/with-subcategories").get(verifyJWT, categoriesWithSubCategories);
 categoryRouter.route("/:id").get(verifyJWT, getCategoryById);
 categoryRouter.route("/slug/:slug").get(verifyJWT, getCategoryBySlug);
