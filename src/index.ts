@@ -59,7 +59,7 @@ app.use("/api", limiter);
 
 //static routes
 // app.use("/Uploads", express.static("./Uploads"));
-app.use('/Uploads', express.static(PERSISTENT_UPLOADS_ROOT));
+app.use('/', express.static(PERSISTENT_UPLOADS_ROOT));
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Pak ovo is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
