@@ -58,20 +58,20 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 //static routes
-// app.use("/Uploads", express.static("./Uploads"));
 app.use('/', express.static(PERSISTENT_UPLOADS_ROOT));
+app.use("/Uploads", express.static("./Uploads"));
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Pak ovo is running on Port ${PORT} in ${env} mode. Last Update at: ${lastDeployTime}`);
 });
 
-app.get('/debug-path', (req, res) => {
-  res.json({
-    cwd: process.cwd(),
-    dirname: __dirname,
-    home: process.env.HOME,
-  });
-});
+// app.get('/debug-path', (req, res) => {
+//   res.json({
+//     cwd: process.cwd(),
+//     dirname: __dirname,
+//     home: process.env.HOME,
+//   });
+// });
 // routes register
 app.use("/api/v1", router);
 app.all("*", (req: Request, res: Response) => {
