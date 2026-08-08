@@ -74,6 +74,14 @@ app.all("*", (req: Request, res: Response) => {
   );
 });
 
+app.get('/debug-path', (req, res) => {
+  res.json({
+    cwd: process.cwd(),
+    dirname: __dirname,
+    home: process.env.HOME,
+  });
+});
+
 app.use(errorHandler);
 
 httpsServer.listen(PORT, () => {
