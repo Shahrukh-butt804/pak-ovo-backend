@@ -58,3 +58,53 @@ export const verifyJWT = tryCatch(
     }
   },
 );
+
+export const optionalJWT = tryCatch(
+  async (req: any, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const token: string | undefined =
+        req.cookies?.accessToken ||
+        req.header("Authorization")?.replace("Bearer ", "");
+
+      // No token = guest user
+      if (!token) {
+        req.user = null;
+        return next();
+      }
+
+      const decodedToken = jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET as string,
+      ) as JwtPayload;
+
+      if (!decodedToken?._id) {
+        req.user = null;
+        return next();
+      }
+
+      const user: any = await User.findById(decodedToken._id).select(
+        "-password -refreshToken -otp",
+      );
+
+      // User doesn't exist
+      if (!user) {
+        req.user = null;
+        return next();
+      }
+
+      // Account is deactivated
+      if (!user.isActive) {
+        req.user = null;
+        return next();
+      }
+
+      // Authenticated user
+      req.user = user;
+      next();
+    } catch (error) {
+      // Invalid/expired token = treat as guest
+      req.user = null;
+      next();
+    }
+  },
+);
