@@ -114,14 +114,110 @@ const getAllOrder = tryCatch(async (req: any, res: Response): Promise<any> => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const keyword = req.query.keyword || "";
 
+  const orConditions: any[] = [
+    { status: { $regex: keyword, $options: "i" } },
+    { email: { $regex: keyword, $options: "i" } },
+    { phone: { $regex: keyword, $options: "i" } },
+    {
+      "shippingAddress.firstName": {
+        $regex: keyword,
+        $options: "i",
+      },
+    },
+    {
+      "shippingAddress.lastName": {
+        $regex: keyword,
+        $options: "i",
+      },
+    },
+  ];
+
+  // Only search _id if keyword is a valid ObjectId
+  if (keyword && /^[0-9a-fA-F]+$/.test(keyword)) {
+    orConditions.push({
+      $expr: {
+        $regexMatch: {
+          input: { $toString: "$_id" },
+          regex: `^${keyword}`,
+          options: "i",
+        },
+      },
+    });
+  }
+
   const aggregate = Order.aggregate([
     {
       $match: {
-        ...(keyword ? { status: { $regex: keyword, $options: "i" } } : {}),
-        ...(keyword ? { email: { $regex: keyword, $options: "i" } } : {})
-      }
+        ...(keyword
+          ? {
+            $or: orConditions,
+          }
+          : {}),
+      },
     },
-    { $sort: { createdAt: -1 } },
+
+    {
+      $lookup: {
+        from: "products",
+        localField: "products.product",
+        foreignField: "_id",
+        as: "productDetails",
+      },
+    },
+
+    {
+      $set: {
+        products: {
+          $map: {
+            input: "$products",
+            as: "item",
+            in: {
+              product: {
+                $let: {
+                  vars: {
+                    matchedProduct: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$productDetails",
+                            as: "product",
+                            cond: {
+                              $eq: [
+                                "$$product._id",
+                                "$$item.product",
+                              ],
+                            },
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                  in: {
+                    _id: "$$matchedProduct._id",
+                    title: "$$matchedProduct.title",
+                    image: "$$matchedProduct.image",
+                  },
+                },
+              },
+
+              quantity: "$$item.quantity",
+              effectivePrice: "$$item.effectivePrice",
+            },
+          },
+        },
+      },
+    },
+
+    {
+      $unset: "productDetails",
+    },
+
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
   ]);
 
   const options = { page, limit };
