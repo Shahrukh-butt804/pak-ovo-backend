@@ -58,21 +58,15 @@ const getStripeKeys = tryCatch(async (req: any, res: Response): Promise<any> => 
 
 
 const createOrder = tryCatch(async (req: any, res: Response): Promise<any> => {
-  const {
-    email,
-    phone,
-    shippingAddress,
-    // token,
-  } = req.body;
+  const { email, phone, shippingAddress } = req.body;
 
   const cart = await Cart.findOne({ user: req.user._id }).populate("products.product");
 
   if (!cart || cart.products.length === 0) {
-    return res.status(400).json({ message: "Cart is empty" });
+    return res.status(400).json({ message: "Your Cart is empty" });
   }
 
   const cartTotal = calculateCartTotal(cart);
-  console.log("🚀 ~ cartTotal:", cartTotal)
 
   // const { status, message, charge } = await makeStripePayment({
   //   token,
