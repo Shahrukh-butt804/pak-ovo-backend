@@ -9,7 +9,7 @@ import { Cart } from "../models/cart";
 import { Order } from "../models/order";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
-import { makeStripePayment } from "../utils/stripePayment";
+// import { makeStripePayment } from "../utils/stripePayment";
 import { tryCatch } from "../utils/tryCatch";
 
 

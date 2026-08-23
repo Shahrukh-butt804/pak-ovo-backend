@@ -148,7 +148,7 @@ const getProductById = tryCatch(async (req: any, res: Response): Promise<any> =>
     throw new ApiError(400, "Product id is required");
   }
 
-  const product = await Product.findById(id).populate("category", "name");
+  const product = await Product.findById(id).populate("category", "name slug");
 
   if (!product) {
     throw new ApiError(404, "Product not found");
@@ -162,7 +162,7 @@ const getProductBySlug = tryCatch(async (req: any, res: Response): Promise<any> 
 
   const { slug } = req.params;
 
-  const product = await Product.findOne({ slug }).populate("category", "name");
+  const product = await Product.findOne({ slug }).populate("category", "name slug");
 
   if (!product) {
     throw new ApiError(404, "Product not found");
